@@ -1,7 +1,7 @@
 module ChessIO where
 import Chess
 import Data.Maybe
-import System.Console.ANSI
+import System.Console.ANSI as ANSI
 
 drawChessBoard :: BoardState -> IO ()
 drawChessBoard [] = return ()
@@ -38,21 +38,20 @@ drawBlackRow state
 drawWhiteCell :: Maybe Piece -> IO ()
 drawWhiteCell piece = if isJust piece
                         then do
-                            setSGR [SetColor Background Vivid White]
+                            setSGR [SetColor Background Vivid ANSI.White]
                             putStr $ " " ++ [pieceRepr (fromJust piece)] ++ " "
                         else do
-                            setSGR [SetColor Background Vivid White]
+                            setSGR [SetColor Background Vivid ANSI.White]
                             putStr "   "
 
 drawBlackCell :: Maybe Piece -> IO ()
-drawBlackCell piece = if isJust piece
-                        then do
-                            setSGR [SetColor Background Vivid Black]
-                            putStr $ " " ++ [pieceRepr (fromJust piece)] ++ " "
-                            setSGR [SetColor Background Vivid White]
-                            return ()
-                        else do
-                            setSGR [SetColor Background Vivid Black]
-                            putStr "   "
-                            setSGR [SetColor Background Vivid White]
-                            return ()
+drawBlackCell piece = do 
+                        if isJust piece
+                            then do
+                                setSGR [SetColor Background Vivid ANSI.Black]
+                                putStr $ " " ++ [pieceRepr (fromJust piece)] ++ " "
+                            else do
+                                setSGR [SetColor Background Vivid ANSI.Black]
+                                putStr "   "
+                        setSGR [SetColor Background Vivid ANSI.White]
+                        return ()
