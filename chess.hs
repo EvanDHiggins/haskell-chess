@@ -8,25 +8,6 @@ data Piece =  Piece PieceColor PieceType deriving (Show)
 
 type Board = [[Maybe Piece]]
 
-pieceRepr :: Piece -> Char
-pieceRepr (Piece White piece) = whitePieceRepr piece
-pieceRepr (Piece Black piece) = blackPieceRepr piece
-
-whitePieceRepr :: PieceType -> Char
-whitePieceRepr Pawn = 'P'
-whitePieceRepr Rook = 'R'
-whitePieceRepr King = 'K'
-whitePieceRepr Queen = 'Q'
-whitePieceRepr Bishop = 'B'
-whitePieceRepr Knight = 'N'
-
-blackPieceRepr :: PieceType -> Char
-blackPieceRepr Pawn = 'P'
-blackPieceRepr Rook = 'R'
-blackPieceRepr King = 'K'
-blackPieceRepr Queen = 'Q'
-blackPieceRepr Bishop = 'B'
-blackPieceRepr Knight = 'N'
 
 -- Create initial board with the black team at the top of the
 -- board (in relation to the screen) and the white team at the bottom

@@ -3,6 +3,26 @@ import Chess
 import Data.Maybe
 import System.Console.ANSI as ANSI
 
+pieceRepr :: Piece -> Char
+pieceRepr (Piece Chess.White piece) = whitePieceRepr piece
+pieceRepr (Piece Chess.Black piece) = blackPieceRepr piece
+
+whitePieceRepr :: PieceType -> Char
+whitePieceRepr Pawn = 'P'
+whitePieceRepr Rook = 'R'
+whitePieceRepr King = 'K'
+whitePieceRepr Queen = 'Q'
+whitePieceRepr Bishop = 'B'
+whitePieceRepr Knight = 'N'
+
+blackPieceRepr :: PieceType -> Char
+blackPieceRepr Pawn = 'P'
+blackPieceRepr Rook = 'R'
+blackPieceRepr King = 'K'
+blackPieceRepr Queen = 'Q'
+blackPieceRepr Bishop = 'B'
+blackPieceRepr Knight = 'N'
+
 drawChessBoard :: Board -> IO ()
 drawChessBoard [] = return ()
 drawChessBoard state = do
