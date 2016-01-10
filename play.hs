@@ -1,16 +1,21 @@
 import Chess
 import ChessIO
 import System.Console.ANSI
-
-type GameState = [Int]
+import Data.Char
 
 main = do
-        playUntilFinished $ []
+        playUntilFinished $ initialBoard
 
-playUntilFinished :: GameState -> IO ()
-playUntilFinished gameState = if isFinished gameState
-                                then return ()
-                                else playUntilFinished gameState
+playUntilFinished :: Board -> IO ()
+playUntilFinished gameState = do 
+                                drawChessBoard gameState
+                                input <- getLine
+                                let linput = map (toLower) input
+                                if linput == "quit"
+                                  then return ()
+                                  else playUntilFinished gameState
 
-isFinished :: GameState -> Bool
+isFinished :: Board -> Bool
 isFinished _ = True
+
+{-initWhiteTeam :: [[Piece]]-}

@@ -3,7 +3,7 @@ import Chess
 import Data.Maybe
 import System.Console.ANSI as ANSI
 
-drawChessBoard :: BoardState -> IO ()
+drawChessBoard :: Board -> IO ()
 drawChessBoard [] = return ()
 drawChessBoard state = do
                         if even . length $ state

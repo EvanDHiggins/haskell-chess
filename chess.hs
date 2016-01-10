@@ -3,27 +3,46 @@ module Chess where
 import Data.Maybe
 
 data PieceType = Pawn | Rook | King | Queen | Bishop | Knight deriving (Show)
-data PieceColor = White | Black
-data Piece =  Piece PieceType PieceColor
+data PieceColor = White | Black deriving (Show)
+data Piece =  Piece PieceColor PieceType deriving (Show)
 
-type BoardState = [[Maybe Piece]]
+type Board = [[Maybe Piece]]
 
 pieceRepr :: Piece -> Char
-pieceRepr (Piece piece White) = whitePiece piece
-pieceRepr (Piece piece Black) = blackPiece piece
+pieceRepr (Piece White piece) = whitePieceRepr piece
+pieceRepr (Piece Black piece) = blackPieceRepr piece
 
-whitePiece :: PieceType -> Char
-whitePiece Pawn = 'P'
-whitePiece Rook = 'R'
-whitePiece King = 'K'
-whitePiece Queen = 'Q'
-whitePiece Bishop = 'B'
-whitePiece Knight = 'N'
+whitePieceRepr :: PieceType -> Char
+whitePieceRepr Pawn = 'P'
+whitePieceRepr Rook = 'R'
+whitePieceRepr King = 'K'
+whitePieceRepr Queen = 'Q'
+whitePieceRepr Bishop = 'B'
+whitePieceRepr Knight = 'N'
 
-blackPiece :: PieceType -> Char
-blackPiece Pawn = 'P'
-blackPiece Rook = 'R'
-blackPiece King = 'K'
-blackPiece Queen = 'Q'
-blackPiece Bishop = 'B'
-blackPiece Knight = 'N'
+blackPieceRepr :: PieceType -> Char
+blackPieceRepr Pawn = 'P'
+blackPieceRepr Rook = 'R'
+blackPieceRepr King = 'K'
+blackPieceRepr Queen = 'Q'
+blackPieceRepr Bishop = 'B'
+blackPieceRepr Knight = 'N'
+
+-- Create initial board with the black team at the top of the
+-- board (in relation to the screen) and the white team at the bottom
+initialBoard :: Board
+initialBoard = (reverse (initTeam Black)) ++ emptyRows ++ (initTeam White)
+            where emptyRows = replicate 4 $ replicate 8 Nothing
+
+-- Returns list of [[Back Row], [Pawns]] of the provided color
+initTeam :: PieceColor -> [[Maybe Piece]]
+initTeam color = (map (justColor) pawns) : (map (justColor) (team)) : []
+        where justColor = Just . Piece color
+
+-- The list of non-pawn pieces in starting order
+team :: [PieceType]
+team = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
+
+-- A full row of pawns
+pawns :: [PieceType]
+pawns = replicate 8 Pawn
