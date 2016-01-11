@@ -8,34 +8,50 @@ pieceRepr (Piece Chess.White piece) = whitePieceRepr piece
 pieceRepr (Piece Chess.Black piece) = blackPieceRepr piece
 
 whitePieceRepr :: PieceType -> Char
-whitePieceRepr Pawn = 'P'
-whitePieceRepr Rook = 'R'
-whitePieceRepr King = 'K'
-whitePieceRepr Queen = 'Q'
-whitePieceRepr Bishop = 'B'
-whitePieceRepr Knight = 'N'
+whitePieceRepr Pawn = '♙'
+whitePieceRepr Rook = '♖'
+whitePieceRepr King = '♔'
+whitePieceRepr Queen = '♕'
+whitePieceRepr Bishop = '♗'
+whitePieceRepr Knight = '♘'
 
 blackPieceRepr :: PieceType -> Char
-blackPieceRepr Pawn = 'P'
-blackPieceRepr Rook = 'R'
-blackPieceRepr King = 'K'
-blackPieceRepr Queen = 'Q'
-blackPieceRepr Bishop = 'B'
-blackPieceRepr Knight = 'N'
+blackPieceRepr Pawn = '♟'
+blackPieceRepr Rook = '♜'
+blackPieceRepr King = '♚'
+blackPieceRepr Queen = '♛'
+blackPieceRepr Bishop = '♝'
+blackPieceRepr Knight = '♞'
 
 drawChessBoard :: Board -> IO ()
-drawChessBoard [] = return ()
-drawChessBoard state = do
-                        if even . length $ state
-                          then drawWhiteRow (head state)
-                          else drawBlackRow (head state)
-                        drawChessBoard $ tail state
+drawChessBoard [] = do 
+                      drawLetters
+                      return ()
 
+drawChessBoard state
+            | length state == 8 = do
+                                    setSGR [SetColor Background Vivid ANSI.White]
+                                    drawLetters
+                                    putStr $ " " ++ (show (length state)) ++ " "
+                                    drawWhiteRow $ head state
+                                    putStrLn $ " " ++ (show (length state)) ++ " "
+                                    drawChessBoard $ tail state
+            | otherwise         = do
+                                    putStr $ " " ++ (show (length state)) ++ " "
+                                    if even . length $ state
+                                      then drawWhiteRow $ head state
+                                      else drawBlackRow $ head state
+                                    putStrLn $ " " ++ (show (length state)) ++ " "
+                                    drawChessBoard $ tail state
+
+drawLetters :: IO ()
+drawLetters = putStrLn "    a  b  c  d  e  f  g  h    "
+                                        
 drawWhiteRow :: [Maybe Piece] -> IO ()
 drawWhiteRow state
             | length state == 1 = do
                                     drawBlackCell $ head state
-                                    putStrLn ""
+                                    putStr ""
                                     return ()
             | otherwise = do
                             if even . length $ state
@@ -47,7 +63,7 @@ drawBlackRow :: [Maybe Piece] -> IO ()
 drawBlackRow state
             | length state == 1 = do
                                     drawWhiteCell $ head state
-                                    putStrLn ""
+                                    putStr ""
                                     return ()
             | otherwise  = do
                               if even . length $ state
