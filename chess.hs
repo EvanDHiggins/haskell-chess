@@ -17,14 +17,12 @@ type Board = [[Maybe Piece]]
 -- Returns the piece at the given position
 -- Handles general case of Pos
 pieceAt :: Board -> Pos -> Piece
-pieceAt brd pos = pieceAt' (reverse brd) pos
-
-pieceAt' :: Board -> Pos -> Piece
-pieceAt' brd (Extern c y) = pieceAt' brd (toIntern $ Extern c y)
-pieceAt' brd (Intern x y)
+pieceAt brd pos = aux (reverse brd) pos
+    where aux brd (Extern c y) = aux brd (toIntern $ Extern c y)
+          aux brd (Intern x y)
                     | x == 1 && y == 1 = fromJust . head $ head brd
-                    | y == 1           = pieceAt' ((tail $ head brd) : (tail brd)) (Intern (x - 1) y)
-                    | otherwise        = pieceAt' (tail brd) (Intern x (y-1))
+                    | y == 1           = aux ((tail $ head brd) : (tail brd)) (Intern (x - 1) y)
+                    | otherwise        = aux (tail brd) (Intern x (y-1))
 
 isExtern :: Pos -> Bool
 isExtern (Extern _ _) = True
@@ -33,10 +31,12 @@ isExtern _            = False
 isIntern :: Pos -> Bool
 isIntern pos = not $ isExtern pos
 
+-- Converts an arbitrary Pos type to it's Intern variant
 toIntern :: Pos -> Pos
 toIntern (Intern x y) = Intern x y
 toIntern (Extern c y) = Intern ((ord $ toLower c) - (ord 'a') + 1) y
 
+-- Converts an arbitrary Pos type to it's Extern variant
 toExtern :: Pos -> Pos
 toExtern (Extern c y) = Extern c y
 toExtern (Intern x y) = Extern (chr ((ord 'a') + x - 1)) y
