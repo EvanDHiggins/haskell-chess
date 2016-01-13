@@ -2,10 +2,11 @@ module ChessIO where
 import Chess
 import Data.Maybe
 import System.Console.ANSI as ANSI
+import Piece
 
 pieceRepr :: Piece -> Char
-pieceRepr (Piece Chess.White piece) = whitePieceRepr piece
-pieceRepr (Piece Chess.Black piece) = blackPieceRepr piece
+pieceRepr (Piece Piece.White piece) = whitePieceRepr piece
+pieceRepr (Piece Piece.Black piece) = blackPieceRepr piece
 
 whitePieceRepr :: PieceType -> Char
 whitePieceRepr Pawn = '♙'

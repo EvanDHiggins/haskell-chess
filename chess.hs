@@ -1,45 +1,50 @@
 module Chess where
 
+import Piece
 import Data.Maybe
 import Data.Char
 
-data PieceType = Pawn | Rook | King | Queen | Bishop | Knight deriving (Show)
-data PieceColor = White | Black deriving (Show)
-data Piece =  Piece PieceColor PieceType deriving (Show)
 
-data Pos = Intern Int Int | Extern Char Int deriving (Show)
+data Pos = Pos Int Int deriving (Show)
+data Space = Space (Maybe Piece) deriving (Show)
 
 type Board = [[Maybe Piece]]
 
+-- Places piece at $from at $to and places a blank space
+-- at $from.
 {-movePiece :: Board -> Pos -> Pos -> Board-}
 {-movePiece brd from to = let piece = pieceAt brd from in-}
 
+setPiece :: Board -> Pos -> Maybe Piece -> Board
+setPiece brd (Pos x y) piece
+                    | x `elem` [1..8] && y `elem` [1..8] = reverse $ setPiece' (reverse brd) (Pos x y) piece
+                    | otherwise = brd
+{-setPiece brd pos piece = reverse $ setPiece' (reverse brd) pos piece-}
+
+setPiece' :: Board -> Pos -> Maybe Piece -> Board
+setPiece' [] _ _ = []
+setPiece' brd (Pos x 1) piece = (setPieceRow (head brd) x piece) : (tail brd)
+setPiece' brd (Pos x y) piece = (head brd) : (setPiece' (tail brd) (Pos x (y-1)) piece)
+
+setPieceRow :: [Maybe Piece] -> Int -> Maybe Piece -> [Maybe Piece]
+setPieceRow [] _ _ = []
+setPieceRow row 1 piece = piece : (tail row)
+setPieceRow (x:xs) idx piece = x : (setPieceRow xs (idx-1) piece)
+                        
 -- Returns the piece at the given position
 -- Handles general case of Pos
 pieceAt :: Board -> Pos -> Piece
 pieceAt brd pos = aux (reverse brd) pos
-    where aux brd (Extern c y) = aux brd (toIntern $ Extern c y)
-          aux brd (Intern x y)
+          where aux brd (Pos x y)
                     | x == 1 && y == 1 = fromJust . head $ head brd
-                    | y == 1           = aux ((tail $ head brd) : (tail brd)) (Intern (x - 1) y)
-                    | otherwise        = aux (tail brd) (Intern x (y-1))
+                    | y == 1           = aux ((tail $ head brd) : (tail brd)) (Pos (x - 1) y)
+                    | otherwise        = aux (tail brd) (Pos x (y-1))
 
-isExtern :: Pos -> Bool
-isExtern (Extern _ _) = True
-isExtern _            = False
 
-isIntern :: Pos -> Bool
-isIntern pos = not $ isExtern pos
-
--- Converts an arbitrary Pos type to it's Intern variant
-toIntern :: Pos -> Pos
-toIntern (Intern x y) = Intern x y
-toIntern (Extern c y) = Intern ((ord $ toLower c) - (ord 'a') + 1) y
-
--- Converts an arbitrary Pos type to it's Extern variant
-toExtern :: Pos -> Pos
-toExtern (Extern c y) = Extern c y
-toExtern (Intern x y) = Extern (chr ((ord 'a') + x - 1)) y
+{--- Converts an arbitrary Pos type to it's Extern variant-}
+{-toExtern :: Pos -> Pos-}
+{-toExtern (Extern c y) = Extern c y-}
+{-toExtern (Intern x y) = Extern (chr ((ord 'a') + x - 1)) y-}
 
 -- Create initial board with the black team at the top of the
 -- board (in relation to the screen) and the white team at the bottom
