@@ -6,7 +6,6 @@ import Data.Char
 
 
 data Pos = Pos Int Int deriving (Show)
-data Space = Space (Maybe Piece) deriving (Show)
 
 type Board = [[Maybe Piece]]
 
