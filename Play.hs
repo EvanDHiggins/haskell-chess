@@ -3,6 +3,8 @@ import ChessIO
 import System.Console.ANSI
 import Data.Char
 import Debug.Trace
+import Data.Maybe
+import Data.Text as T
 
 main = do
         playUntilFinished $ initialBoard
@@ -19,14 +21,22 @@ main = do
 
 playUntilFinished :: Board -> IO ()
 playUntilFinished brd = do
-                            putStrLn "Play Until Finished"
+                            putStrLn "Move piece from:"
                             in1 <- getLine
-                            from <- parsePos in1
+                            putStrLn "             to:"
                             in2 <- getLine
-                            to <- parsePos in2
-                            show from
-                            show to
-                            return ()
+                            let from = parsePos in1
+                            let to = parsePos in2
+                            if isJust from && isJust to
+                            then putStrLn "both valid"
+                            else do
+                                    putStrLn "Invalid space input. Try again"
+                                    playUntilFinished brd
+
+                            playUntilFinished brd
+
+printInputError :: IO ()
+printInputError = putStrLn "Invalid space input. Try again"
 
 parsePos :: String -> Maybe Pos
 parsePos "" = Nothing
