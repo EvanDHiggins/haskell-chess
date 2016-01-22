@@ -39,12 +39,6 @@ pieceAt brd pos = aux (reverse brd) pos
                     | y == 1           = aux ((tail $ head brd) : (tail brd)) (Pos (x - 1) y)
                     | otherwise        = aux (tail brd) (Pos x (y-1))
 
-
-{--- Converts an arbitrary Pos type to it's Extern variant-}
-{-toExtern :: Pos -> Pos-}
-{-toExtern (Extern c y) = Extern c y-}
-{-toExtern (Intern x y) = Extern (chr ((ord 'a') + x - 1)) y-}
-
 -- Create initial board with the black team at the top of the
 -- board (in relation to the screen) and the white team at the bottom
 initialBoard :: Board
