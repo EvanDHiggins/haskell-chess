@@ -4,40 +4,46 @@ import System.Console.ANSI
 import Data.Char
 import Debug.Trace
 import Data.Maybe
-import Data.Text as T
+import System.Exit
+import System.IO
 
 main = do
         playUntilFinished $ initialBoard
 
-{-playUntilFinished :: Board -> IO ()-}
-{-playUntilFinished gameState = do -}
-                                {-drawChessBoard gameState-}
-                                {-rawInput <- getLine-}
-                                {-let input = map (toLower) rawInput-}
-                                {-putStrLn . show $ toPos input-}
-                                {-if input == "quit"-}
-                                  {-then return ()-}
-                                  {-else playUntilFinished (setPiece gameState (toPos input) Nothing)-}
-
 playUntilFinished :: Board -> IO ()
 playUntilFinished brd = do
-                            putStrLn "Move piece from:"
-                            in1 <- getLine
-                            putStrLn "             to:"
-                            in2 <- getLine
-                            let from = parsePos in1
-                            let to = parsePos in2
-                            if isJust from && isJust to
-                            then putStrLn "both valid"
-                            else do
-                                    putStrLn "Invalid space input. Try again"
-                                    playUntilFinished brd
-
+                            putStr "Move piece from: "
+                            hFlush stdout
+                            from <- getPos
+                            putStr "             to: "
+                            hFlush stdout
+                            to <- getPos
+                            putStrLn ("from " ++ (show from))
+                            putStrLn ("to " ++ (show to))
+                            drawChessBoard initialBoard
                             playUntilFinished brd
 
+-- Gets a valid position from the user. Invalid input throws
+-- an error and retries the query. "quit" exits the program
+getPos :: IO Pos
+getPos = do
+            input <- getLine
+            if (map toLower input) == "quit"
+                then exitSuccess
+                else let pos = parsePos input in
+                        if isNothing pos
+                            then do 
+                                    printInputError
+                                    getPos
+                            else return (fromJust pos)
+
+-- Error on incorrect user input
 printInputError :: IO ()
 printInputError = putStrLn "Invalid space input. Try again"
 
+-- Converts the string parameter into a maybe position.
+-- It only considers the first two characters of the input. If a string
+-- of "b4zzzzzzz" is passed it will interpret this as "Pos 3 4"
 parsePos :: String -> Maybe Pos
 parsePos "" = Nothing
 parsePos str
@@ -45,35 +51,18 @@ parsePos str
         | (isValidPosChar (head str)) && (isValidNum (str !! 1)) = Just (Pos (toNum $ head str) (digitToInt (str !! 1)))
         | otherwise = Nothing
 
+-- Converts a character to its corresponding position number on the 
+-- chess board. [a..h] maps to [1..8]
 toNum :: Char -> Int
 toNum ch = (ord . toLower $ ch) - (ord 'a') + 1
 
+-- Determines if the char is within the correct range of a chess
+-- board's lettering system
 isValidNum :: Char -> Bool
 isValidNum n
         | isHexDigit n = (digitToInt n) `elem` [1..8]
         | otherwise = False
 
+-- Returns true if the character argument is a valid chess board character
 isValidPosChar :: Char -> Bool
-isValidPosChar ch = let c = toLower ch in
-                    c == 'a' ||
-                    c == 'b' ||
-                    c == 'c' ||
-                    c == 'd' ||
-                    c == 'e' ||
-                    c == 'f' ||
-                    c == 'g' ||
-                    c == 'h'
-
-isFinished :: Board -> Bool
-isFinished _ = True
-
-
--- Converts an arbitrary Pos type to it's Intern variant
-toPos :: String -> Pos
-toPos str
-        | length str /= 2 = Pos 0 0
-        | otherwise = Pos ((ord $ toLower (head str)) - (ord 'a') + 1)(digitToInt $ last str)
-
-{-toIntern :: String -> Pos-}
-{-toIntern (Intern x y) = Intern x y-}
-{-toIntern (Extern c y) = Intern ((ord $ toLower c) - (ord 'a') + 1) y-}
+isValidPosChar ch = (toLower ch) `elem` ['a'..'h']
